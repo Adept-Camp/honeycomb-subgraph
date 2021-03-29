@@ -63,4 +63,3 @@ typings/
 # graph artifacts
 generated
 build
-yarn.lock
