@@ -64,7 +64,7 @@ export function loadOrCreatePair(address: Address): Pair {
       log.info('Could not get token0 address from pair', [])
       return null
     }
-    let token1 = pairContract.try_token1()
+    let token1 = pairContract.try_token0()
     if (token1.reverted) {
       log.info('Could not get token0 address from pair', [])
       return null
