@@ -46,11 +46,11 @@ export function handleNewPool(call: CreateUnipoolCall): void {
   let poolContract = PoolContract.bind(call.outputs.value0)
   let pool = new Pool(call.outputs.value0.toHex())
   pool.pair = pair.id
-  let tradedToken = loadOrCreateToken(poolContract.tradedToken())
-  if (tradedToken === null) {
+  let tradableToken = loadOrCreateToken(poolContract.tradableToken())
+  if (tradableToken === null) {
     return
   }
-  pool.rewardToken = tradedToken.id
+  pool.rewardToken = tradableToken.id
   pool.rewards = ZERO_BD
   pool.staked = ZERO_BD
 
@@ -83,11 +83,11 @@ export function handleNewPoolWithProxy(call: CreateUnipoolWithProxyCall): void {
   let poolContract = PoolContract.bind(call.outputs.value0)
   let pool = new Pool(call.outputs.value0.toHex())
   pool.pair = pair.id
-  let tradedToken = loadOrCreateToken(poolContract.tradedToken())
-  if (tradedToken === null) {
+  let tradableToken = loadOrCreateToken(poolContract.tradableToken())
+  if (tradableToken === null) {
     return
   }
-  pool.rewardToken = tradedToken.id
+  pool.rewardToken = tradableToken.id
   pool.rewards = ZERO_BD
   pool.staked = ZERO_BD
 

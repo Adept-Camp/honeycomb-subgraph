@@ -32,7 +32,7 @@ dataSources:
       callHandlers:
         - function: createUnipool(address,address)
           handler: handleNewPool
-        - function: createUnipoolWithProxy(address)
+        - function: createUnipoolWithProxy(address,address)
           handler: handleNewPoolWithProxy
       file: ./src/factory.ts
 templates:
