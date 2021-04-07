@@ -19,25 +19,34 @@ import {
   ZERO_BD,
   loadOrCreateFactory,
   loadOrCreateToken,
-  loadOrCreatePair
+  loadOrCreatePair,
+  loadOrCreateRouter
 } from './helpers'
 
 export function handleNewPool(call: CreateUnipoolCall): void {
   // TODO(onbjerg): Also persist balance proxies
   // Update factory stats
-  let factory = loadOrCreateFactory(call.to)
+
+  // Load pair data
+  let pair = loadOrCreatePair(call.inputs._uniswapTokenExchange)
+  if (pair === null) {
+     log.info('Could not load pair', [])
+     return
+  }
+  
+  // Load router data
+  let router = loadOrCreateRouter(call.inputs._uniswapRouter)
+  if (router === null) {
+    log.info('Could not load router', [])
+    return
+  }
+  
+  let factory = loadOrCreateFactory(call.pair, call.router)
   if (factory === null) {
     log.info('Could not load factory', [])
     return
   }
   factory.poolCount = factory.poolCount + 1
-
-  // Load pair data
-  let pair = loadOrCreatePair(call.inputs._uniswapTokenExchange)
-  if (pair === null) {
-    log.info('Could not load pair', [])
-    return
-  }
 
   // Set up pool data source
   PoolDataSource.create(call.outputs.value0)
@@ -62,6 +71,22 @@ export function handleNewPool(call: CreateUnipoolCall): void {
 export function handleNewPoolWithProxy(call: CreateUnipoolWithProxyCall): void {
   // TODO(onbjerg): Also persist balance proxies
   // Update factory stats
+
+  // Get the inputs
+  // Load pair data
+  let pair = loadOrCreatePair(call.inputs._uniswapTokenExchange)
+  if (pair === null) {
+     log.info('Could not load pair', [])
+     return
+  }
+  
+  // Load router data
+  let router = loadOrCreateRouter(call.inputs._uniswapRouter)
+  if (router === null) {
+    log.info('Could not load router', [])
+    return
+  }
+
   let factory = loadOrCreateFactory(call.to)
   if (factory === null) {
     log.info('Could not load factory', [])
@@ -69,13 +94,7 @@ export function handleNewPoolWithProxy(call: CreateUnipoolWithProxyCall): void {
   }
   factory.poolCount = factory.poolCount + 1
 
-  // Load pair data
-  let pair = loadOrCreatePair(call.inputs._uniswapTokenExchange)
-  if (pair === null) {
-    log.info('Could not load pair', [])
-    return
-  }
-
+ 
   // Set up pool data source
   PoolDataSource.create(call.outputs.value0)
 
@@ -93,5 +112,6 @@ export function handleNewPoolWithProxy(call: CreateUnipoolWithProxyCall): void {
 
   factory.save()
   pair.save()
+  router.save()
   pool.save()
 }

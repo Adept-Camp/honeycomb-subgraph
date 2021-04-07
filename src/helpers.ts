@@ -13,7 +13,8 @@ import {
 import {
   UnipoolFactory,
   Token,
-  Pair
+  Pair,
+  Router
 } from '../generated/schema'
 
 export let ZERO_BI = BigInt.fromI32(0)
@@ -30,10 +31,10 @@ export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
   return bd
 }
 
-export function loadOrCreateFactory(address: Address): UnipoolFactory {
-  let factory = UnipoolFactory.load(address.toHex())
+export function loadOrCreateFactory(address: Address, address2:Address): UnipoolFactory {
+  let factory = UnipoolFactory.load(address.toHex(), address2.toHex())
   if (factory === null) {
-    factory = new UnipoolFactory(address.toHex())
+    factory = new UnipoolFactory(address.toHex(), address2.toHex())
     factory.poolCount = 0
     factory.save()
   }
@@ -73,5 +74,22 @@ export function loadOrCreatePair(address: Address): Pair {
     pair.token1 = loadOrCreateToken(token1.value).id
     pair.save()
   }
+
   return pair as Pair
+
 }
+
+export function loadOrCreateRouter(address: Address): Router {
+  let router = Router.load(address.toHex())
+  if (router === null) {
+//      let tokenContract = ERC20.bind(address)
+
+//      token = new Token(address.toHex())
+//      token.symbol = tokenContract.symbol()
+//      token.name = tokenContract.name()
+//      token.decimals = BigInt.fromI32(tokenContract.decimals())
+//      token.save()
+  }
+  return router as Router
+}
+

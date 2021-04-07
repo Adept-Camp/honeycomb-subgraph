@@ -1,15 +1,15 @@
 specVersion: 0.0.2
 description: Honeycomb pool data
-repository: https://github.com/1hive/honeycomb-subgraph
+repository: https://github.com/Adept-Camp/honeycomb-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Factory
+    name: UnipoolFactory
     network: xdai
     source:
       address: '0xF04942970C98fdda8dddB54f92C25A4EA0Dc9d11'
-      abi: Factory
+      abi: UnipoolFactory
       startBlock: 15243779
     mapping:
       kind: ethereum/events
@@ -21,7 +21,7 @@ dataSources:
         - Pair
         - Token
       abis:
-        - name: Factory
+        - name: UnipoolFactory
           file: ./abis/UnipoolFactory.json
         - name: Pool
           file: ./abis/Unipool.json
@@ -30,9 +30,11 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       callHandlers:
+        - function: createBalanceProxy(address)
+          handler: handlenewProxy
         - function: createUnipool(address,address)
           handler: handleNewPool
-        - function: createUnipoolWithProxy(address)
+        - function: createUnipoolWithProxy(address, address)
           handler: handleNewPoolWithProxy
       file: ./src/factory.ts
 templates:

@@ -25,6 +25,11 @@ type Pair @entity {
   token1: Token!
 }
 
+type Router @entity {
+  # Router address
+  id: ID!
+}
+
 type Pool @entity {
   # Pool address
   id: ID!
