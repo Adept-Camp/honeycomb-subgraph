@@ -1,10 +1,4 @@
-type UnipoolFactory @entity {
-  # Factory address
-  id: ID!
 
-  # Number of pools
-  poolCount: Int!
-}
 
 type Token @entity {
   # Token address
@@ -41,4 +35,21 @@ type Pool @entity {
   rewardToken: Token!
   rewards: BigDecimal!
   staked: BigDecimal!
+}
+
+type BalanceProxy @entity {
+  # Proxy address
+  id: ID!
+
+  # Pool
+  pool: Pool!
+}
+
+type UnipoolFactory @entity {
+  # Factory address
+  id: ID!
+
+  # Number of pools
+  balanceProxy: BalanceProxy!
+  poolCount: Int!
 }

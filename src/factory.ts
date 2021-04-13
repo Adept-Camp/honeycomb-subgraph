@@ -1,14 +1,18 @@
 import {
   BigDecimal,
+  Address,
   log
 } from '@graphprotocol/graph-ts'
 import {
   CreateUnipoolWithProxyCall,
   CreateUnipoolCall
-} from '../generated/Factory/Factory'
+}  from '../generated/UnipoolFactory/UnipoolFactory'
 import {
   Pool as PoolContract
-} from '../generated/Factory/Pool'
+} from '../generated/UnipoolFactory/Pool'
+import {
+  Proxy
+} from '../generated/UnipoolFactory/Proxy'
 import {
   Pool as PoolDataSource
 } from '../generated/templates'
@@ -18,55 +22,20 @@ import {
 import {
   ZERO_BD,
   loadOrCreateFactory,
+  loadOrCreateBalanceProxy,
   loadOrCreateToken,
   loadOrCreatePair,
-  loadOrCreateRouter
+  loadOrCreateRouter,
+  loadTradedToken
 } from './helpers'
 
-export function handleNewPool(call: CreateUnipoolCall): void {
-  // TODO(onbjerg): Also persist balance proxies
-  // Update factory stats
-
-  // Load pair data
-  let pair = loadOrCreatePair(call.inputs._uniswapTokenExchange)
-  if (pair === null) {
-     log.info('Could not load pair', [])
-     return
-  }
-  
-  // Load router data
-  let router = loadOrCreateRouter(call.inputs._uniswapRouter)
-  if (router === null) {
-    log.info('Could not load router', [])
-    return
-  }
-  
-  let factory = loadOrCreateFactory(call.pair, call.router)
-  if (factory === null) {
-    log.info('Could not load factory', [])
-    return
-  }
-  factory.poolCount = factory.poolCount + 1
-
-  // Set up pool data source
-  PoolDataSource.create(call.outputs.value0)
-
-  // Create pool
-  let poolContract = PoolContract.bind(call.outputs.value0)
-  let pool = new Pool(call.outputs.value0.toHex())
-  pool.pair = pair.id
-  let tradedToken = loadOrCreateToken(poolContract.tradedToken())
-  if (tradedToken === null) {
-    return
-  }
-  pool.rewardToken = tradedToken.id
-  pool.rewards = ZERO_BD
-  pool.staked = ZERO_BD
-
-  factory.save()
-  pair.save()
-  pool.save()
-}
+//export function handleNewFactory(call: ConstructorCall): void{
+//  let rewardToken = loadOrCreateToken( call.inputs._rewardToken)
+//  let factory = loadOrCreateFactory(call.inputs._rewardToken)
+//
+//  rewardToken.save()
+//  factory.save()
+//} 
 
 export function handleNewPoolWithProxy(call: CreateUnipoolWithProxyCall): void {
   // TODO(onbjerg): Also persist balance proxies
@@ -96,17 +65,25 @@ export function handleNewPoolWithProxy(call: CreateUnipoolWithProxyCall): void {
 
  
   // Set up pool data source
-  PoolDataSource.create(call.outputs.value0)
-
+  PoolDataSource.create(call.outputValues[0].value.toAddress())
+  
   // Create pool
-  let poolContract = PoolContract.bind(call.outputs.value0)
-  let pool = new Pool(call.outputs.value0.toHex())
+  let poolContract = PoolContract.bind(call.outputValues[0].value.toAddress())
+  let pool = new Pool(call.outputValues[0].value.toAddress().toHex())
   pool.pair = pair.id
-  let tradedToken = loadOrCreateToken(poolContract.tradedToken())
-  if (tradedToken === null) {
+  let tradableToken = loadOrCreateToken(poolContract.tradableToken())
+  if (tradableToken === null) {
     return
   }
-  pool.rewardToken = tradedToken.id
+
+  let proxy = loadOrCreateBalanceProxy(Address.fromString(pool.id))
+  if (proxy === null) {
+    log.info('Could not load proxy', [])
+    return
+  }
+
+  //pool.rewardToken = "0x5f1F81de1D21b97a5d0D5d62d89BDE9DdEc27325" //tradedToken.id
+  pool.rewardToken = loadTradedToken(Address.fromString(pair.id), Address.fromString(tradableToken.id)).id
   pool.rewards = ZERO_BD
   pool.staked = ZERO_BD
 
@@ -114,4 +91,8 @@ export function handleNewPoolWithProxy(call: CreateUnipoolWithProxyCall): void {
   pair.save()
   router.save()
   pool.save()
+  proxy.save()
 }
+
+
+

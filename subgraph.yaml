@@ -23,6 +23,8 @@ dataSources:
       abis:
         - name: UnipoolFactory
           file: ./abis/UnipoolFactory.json
+        - name: Proxy
+          file: ./abis/BalanceProxy.json
         - name: Pool
           file: ./abis/Unipool.json
         - name: Pair
@@ -30,12 +32,12 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       callHandlers:
+        - function: createUnipoolWithProxy(address,address)
+          handler: handleNewPoolWithProxy
+        - function: createUnipool(address,address) 
+          handler: handleNewPool
         - function: createBalanceProxy(address)
           handler: handlenewProxy
-        - function: createUnipool(address,address)
-          handler: handleNewPool
-        - function: createUnipoolWithProxy(address, address)
-          handler: handleNewPoolWithProxy
       file: ./src/factory.ts
 templates:
   - kind: ethereum/contract

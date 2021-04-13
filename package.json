@@ -2,11 +2,13 @@
   "name": "honeycomb",
   "version": "0.1.0",
   "scripts": {
+    "auth": "graph auth https://api.thegraph.com/deploy/ 631c30507824494b8ea77957ad30b10e",
     "create": "graph create 1hive/honeycomb --node https://api.thegraph.com/deploy/",
     "create-local": "graph create 1hive/honeycomb --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy 1hive/honeycomb --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy": "graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ adept-camp/ac-wxdai-subgraph",
+    "deploy-pools": "graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ adept-camp/honeyswap-pools",
     "deploy-local": "graph deploy 1hive/honeycomb --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
